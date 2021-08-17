@@ -29,10 +29,12 @@ interface ProjectType {
 
 export type VersionType = [number, number, number];
 
-type IsExact<T, U> = [T] extends [U] ? ([U] extends [T] ? true : false) : false;
-function typeAssert<T extends true | false>(expectTrue: T) {
-  return expectTrue;
-}
+type TypeEqual<T, U> = [T] extends [U]
+  ? [U] extends [T]
+    ? true
+    : false
+  : false;
+type TypeAssert<T extends true> = T;
 
 export const projectActions = {
   [LOAD_PROJECT_FILE]: createUILockAction(
@@ -90,7 +92,9 @@ export const projectActions = {
         }
 
         // Error when typeof projectData != ProjectType
-        typeAssert<IsExact<typeof projectData, ProjectType>>(true);
+        type ReturnTypeCheck = TypeAssert<
+          TypeEqual<typeof projectData, ProjectType>
+        >;
 
         if (
           confirm !== false &&
