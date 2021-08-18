@@ -3,17 +3,8 @@ import { createUILockAction } from "@/store/ui";
 import { REGISTER_AUDIO_ITEM, REMOVE_ALL_AUDIO_ITEM } from "@/store/audio";
 import { State, AudioItem } from "@/store/type";
 
-import {
-  version as version_0_3_0,
-  validater as validater_0_3_0,
-  ProjectType as ProjectType_0_3_0,
-} from "./version0.3.0";
-import {
-  version as version_0_4_0,
-  validater as validater_0_4_0,
-  updater as updater_0_4_0,
-  ProjectType as ProjectType_0_4_0,
-} from "./version0.4.0";
+import * as version0_3_0 from "./version0.3.0";
+import * as version0_4_0 from "./version0.4.0";
 
 export const LOAD_PROJECT_FILE = "LOAD_PROJECT_FILE";
 export const SAVE_PROJECT_FILE = "SAVE_PROJECT_FILE";
@@ -76,17 +67,16 @@ export const projectActions = {
         const pipe = new PipeChain<
           VersionType,
           ProjectBaseType,
-          ProjectType_0_3_0
-        >(version_0_3_0, validater_0_3_0, null, null).update<ProjectType_0_4_0>(
-          version_0_4_0,
-          updater_0_4_0,
-          validater_0_4_0
-        );
+          version0_3_0.ProjectType
+        >(version0_3_0.version, version0_3_0.validater, null, null).update(
+          version0_4_0.version,
+          version0_4_0.updater,
+          version0_4_0.validater
+        ); //.update(version_x_x_x, updater_x_x_x, validater_x_x_x)
+        // Chain update here when the project schema is updated.
 
-        const projectData: ProjectType_0_4_0 | null = pipe.flow(
-          appVersionList,
-          obj
-        );
+        const projectData = pipe.flow(appVersionList, obj);
+
         if (projectData == null) {
           throw new Error("Invalid file format");
         }
