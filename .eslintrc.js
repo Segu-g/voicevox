@@ -49,6 +49,7 @@ module.exports = {
         ignoreRestSiblings: true,
       },
     ],
+    "@typescript-eslint/no-namespace": "off",
     "vue/component-tags-order": [
       "error",
       {

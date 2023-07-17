@@ -1,5 +1,5 @@
 import semver from "semver";
-import { z } from "zod";
+import { optional, z } from "zod";
 import { buildProjectFileName, getBaseName } from "./utility";
 import { createPartialStore } from "./vuex";
 import { createUILockAction } from "@/store/ui";
@@ -128,6 +128,32 @@ export const projectStore = createPartialStore<ProjectStoreTypes>({
 
           // Migration
           const engineId = EngineId("074fc39e-678b-4c13-8916-ffca8d505d1d");
+
+          const v_0_3_0_MoraSchema = z.object({
+            text: z.string(),
+            vowel: z.string(),
+            pitch: z.number(),
+            consonant: z.string().optional(),
+          });
+          const v_0_3_0_AccentPhraseSchema = z.object({
+            moras: z.array(v_0_3_0_MoraSchema),
+            accent: z.number(),
+            pauseMora: v_0_3_0_MoraSchema.optional(),
+          });
+          const v_0_3_0_AudioQuerySchema = z.object({
+            accentPhrases: z.array(v_0_3_0_AccentPhraseSchema),
+            speedScale: z.number(),
+            pitchScale: z.number(),
+            intonationScale: z.number(),
+          });
+          const v_0_3_0_AudioItemSchema = z.object({
+            text: z.string(),
+            charactorIndex: z.number().optional(),
+            query: v_0_3_0_AudioQuerySchema.optional(),
+          });
+          const v_0_4_0_AudioItemSchema = v_0_3_0_AudioItemSchema
+            .omit({ charactorIndex: true })
+            .extend(z.object({}));
 
           if (
             semver.satisfies(projectAppVersion, "<0.4", semverSatisfiesOptions)
@@ -512,6 +538,146 @@ export const projectStore = createPartialStore<ProjectStoreTypes>({
     },
   },
 });
+
+namespace ProjectSchemaMigration {
+  namespace RootSchema {
+    export const moraSchema = z.object({
+      text: z.string(),
+      vowel: z.string(),
+      pitch: z.number(),
+      consonant: z.string().optional(),
+    });
+    export const accentPhraseSchema = z.object({
+      moras: z.array(moraSchema),
+      accent: z.number(),
+      pauseMora: moraSchema.optional(),
+    });
+    export const audioQuerySchema = z.object({
+      accentPhrases: z.array(accentPhraseSchema),
+      speedScale: z.number(),
+      pitchScale: z.number(),
+      intonationScale: z.number(),
+    });
+    export const audioItemSchema = z.object({
+      text: z.string(),
+      charactorIndex: z.number().optional(),
+      query: audioQuerySchema.optional(),
+    });
+  }
+  namespace v_0_3_0 {
+    export const moraSchema = RootSchema.moraSchema;
+    export const accentPhraseSchema = RootSchema.accentPhraseSchema;
+    export const audioQuerySchema = RootSchema.audioQuerySchema;
+    export const audioItemSchema = RootSchema.audioItemSchema;
+  }
+  namespace v_0_4_0 {
+    export const moraSchema = v_0_3_0.moraSchema;
+    export const accentPhraseSchema = v_0_3_0.accentPhraseSchema;
+    export const audioQuerySchema = v_0_3_0.audioQuerySchema.extend({
+      volumeScale: z.number(),
+      prePhonemeLength: z.number(),
+      postPhonemeLength: z.number(),
+      outputSamplingRate: z.number(),
+    });
+    export const audioItemSchema = v_0_3_0.audioItemSchema
+      .omit({
+        query: true,
+        charactorIndex: true,
+      })
+      .extend({
+        characterIndex: z.number().optional(),
+        query: audioQuerySchema.optional(),
+      });
+  }
+  namespace v_0_5_0 {
+    export const moraSchema = v_0_4_0.moraSchema.extend({
+      vowelLength: z.number(),
+      consonantLength: z.number().optional(),
+    });
+    export const accentPhraseSchema = v_0_4_0.accentPhraseSchema
+      .omit({
+        moras: true,
+        pauseMora: true,
+      })
+      .extend({ moras: z.array(moraSchema), pauseMora: moraSchema.optional() });
+    export const audioQuerySchema = v_0_4_0.audioQuerySchema
+      .omit({
+        accentPhrases: true,
+      })
+      .extend({
+        accentPhrases: z.array(accentPhraseSchema),
+        outputStereo: z.boolean(),
+      });
+    export const audioItemSchema = v_0_4_0.audioItemSchema
+      .omit({
+        query: true,
+      })
+      .extend({ query: audioQuerySchema.optional() });
+  }
+  namespace v_0_6_0 {
+    export const moraSchema = v_0_5_0.moraSchema;
+    export const accentPhraseSchema = v_0_5_0.accentPhraseSchema;
+    export const audioQuerySchema = v_0_5_0.audioQuerySchema.extend({
+      kana: z.string().optional(),
+    });
+    export const audioItemSchema = v_0_5_0.audioItemSchema
+      .omit({
+        query: true,
+      })
+      .extend({
+        query: audioQuerySchema.optional(),
+      });
+  }
+  namespace v_0_7_0 {
+    export const moraSchema = v_0_6_0.moraSchema;
+    export const accentPhraseSchema = v_0_6_0.accentPhraseSchema;
+    export const audioQuerySchema = v_0_6_0.audioQuerySchema;
+    export const audioItemSchema = v_0_6_0.audioItemSchema
+      .omit({
+        characterIndex: true,
+      })
+      .extend({
+        speaker: z.number().optional(),
+      });
+  }
+  namespace v_0_8_0 {
+    export const moraSchema = v_0_7_0.moraSchema;
+    export const accentPhraseSchema = v_0_7_0.accentPhraseSchema;
+    export const audioQuerySchema = v_0_7_0.audioQuerySchema;
+    export const audioItemSchema = v_0_7_0.audioItemSchema
+      .omit({
+        speaker: true,
+      })
+      .extend({
+        styleId: z.number().optional(),
+      });
+  }
+
+  namespace v_0_10_0 {
+    export const moraSchema = v_0_8_0.moraSchema;
+    export const accentPhraseSchema = v_0_8_0.accentPhraseSchema;
+    export const audioQuerySchema = v_0_8_0.audioQuerySchema;
+    export const audioItemSchema = v_0_8_0.audioItemSchema.extend({
+      presetKey: z.string().optional(),
+    });
+  }
+
+  namespace v_0_14_0 {
+    export const moraSchema = v_0_10_0.moraSchema;
+    export const accentPhraseSchema = v_0_10_0.accentPhraseSchema;
+    export const audioQuerySchema = v_0_10_0.audioQuerySchema;
+    export const morphingInfoSchema = z.object({
+      rate: z.number(),
+      targetEngineId: z.string(),
+      targetSpeakerId: z.string(),
+      targetStyleId: z.number(),
+    });
+    export const audioItemSchema = v_0_10_0.audioItemSchema.extend({
+      engineId: z.string().optional(),
+      morphingInfo: morphingInfoSchema.optional(),
+    });
+  }
+}
 
 const moraSchema = z.object({
   text: z.string(),
