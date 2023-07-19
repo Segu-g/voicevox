@@ -14,7 +14,7 @@
     >
       {{ textLineNumberIndex }}
     </div>
-    <character-button
+    <character-select-button
       v-model:selected-voice="selectedVoice"
       :character-infos="userOrderedCharacterInfos"
       :loading="isInitializingSpeaker"
@@ -63,7 +63,7 @@
 <script setup lang="ts">
 import { computed, watch, ref } from "vue";
 import { QInput } from "quasar";
-import CharacterButton from "./CharacterButton.vue";
+import CharacterSelectButton from "./CharacterSelectButton.vue";
 import { useStore } from "@/store";
 import { AudioKey, Voice } from "@/type/preload";
 

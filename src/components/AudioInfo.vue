@@ -217,7 +217,7 @@
       <q-separator class="q-my-md" />
       <span class="text-body1 q-mb-xs">モーフィング</span>
       <div class="row no-wrap items-center">
-        <character-button
+        <character-select-button
           v-model:selected-voice="morphingTargetVoice"
           class="q-my-xs"
           :character-infos="morphingTargetCharacters"
@@ -299,7 +299,7 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from "vue";
 import { QSelectProps } from "quasar";
-import CharacterButton from "./CharacterButton.vue";
+import CharacterSelectButton from "./CharacterSelectButton.vue";
 import PresetManageDialog from "./PresetManageDialog.vue";
 import { useStore } from "@/store";
 
