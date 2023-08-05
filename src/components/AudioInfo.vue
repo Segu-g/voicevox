@@ -317,6 +317,7 @@ import {
 } from "@/helpers/previewSliderHelper";
 import { EngineManifest } from "@/openapi";
 import { useDefaultPreset } from "@/composables/useDefaultPreset";
+import { usePresetStore } from "@/pinia-stores/preset";
 
 const props =
   defineProps<{
@@ -324,6 +325,7 @@ const props =
   }>();
 
 const store = useStore();
+const presetStore = usePresetStore();
 
 // accent phrase
 const uiLocked = computed(() => store.getters.UI_LOCKED);
@@ -636,8 +638,8 @@ const enablePreset = computed(
   () => store.state.experimentalSetting.enablePreset
 );
 
-const presetItems = computed(() => store.state.presetItems);
-const presetKeys = computed(() => store.state.presetKeys);
+const presetItems = computed(() => presetStore.presetItems);
+const presetKeys = computed(() => presetStore.presetKeys);
 const audioPresetKey = computed(() => audioItem.value?.presetKey);
 const isRegisteredPreset = computed(
   () =>
@@ -872,7 +874,7 @@ const addPreset = () => {
 
   closeAllDialog();
 
-  return store.dispatch("ADD_PRESET", {
+  return presetStore.addPreset({
     presetData: newPreset,
   });
 };
@@ -887,7 +889,7 @@ const updatePreset = async (fullApply: boolean) => {
   const newPreset = createPresetData(title);
   if (newPreset == undefined) return;
 
-  await store.dispatch("UPDATE_PRESET", {
+  await presetStore.updatePreset({
     presetData: newPreset,
     presetKey: key,
   });

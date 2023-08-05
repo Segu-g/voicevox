@@ -26,7 +26,7 @@ import {
 } from "./utility";
 import { convertAudioQueryFromEditorToEngine } from "./proxy";
 import { createPartialStore } from "./vuex";
-import { determineNextPresetKey } from "./preset";
+import { determineNextPresetKey, usePresetStore } from "@/pinia-stores/preset";
 import {
   AudioKey,
   CharacterInfo,
@@ -580,6 +580,8 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
         baseAudioItem?: AudioItem;
       }
     ) {
+      const presetStore = usePresetStore();
+
       //引数にbaseAudioItemが与えられた場合、baseAudioItemから話速等のパラメータを引き継いだAudioItemを返す
       //baseAudioItem.queryのうち、accentPhrasesとkanaは基本設定パラメータではないので引き継がない
       //baseAudioItemのうち、textとstyleIdは別途与えられるので引き継がない
@@ -622,7 +624,9 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
       const presetKeyCandidate = payload.baseAudioItem?.presetKey;
 
       const { nextPresetKey, shouldApplyPreset } = determineNextPresetKey(
-        state,
+        presetStore.defaultPresetKeys,
+        state.experimentalSetting,
+        state.inheritAudioInfo,
         voice,
         presetKeyCandidate,
         baseAudioItem ? "copy" : "generate"
@@ -632,7 +636,7 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
       // audioItemに対してプリセットを適用する
       if (shouldApplyPreset) {
         if (nextPresetKey) {
-          const preset = state.presetItems[nextPresetKey];
+          const preset = presetStore.presetItems[nextPresetKey];
           return applyAudioPresetToAudioItem(newAudioItem, preset);
         }
       }
@@ -1066,11 +1070,12 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
 
   APPLY_AUDIO_PRESET: {
     mutation(state, { audioKey }: { audioKey: AudioKey }) {
+      const presetStore = usePresetStore();
       const audioItem = state.audioItems[audioKey];
 
       if (!audioItem.presetKey) return;
 
-      const presetItem = state.presetItems[audioItem.presetKey];
+      const presetItem = presetStore.presetItems[audioItem.presetKey];
       const newAudioItem = applyAudioPresetToAudioItem(audioItem, presetItem);
 
       state.audioItems[audioKey] = newAudioItem;
@@ -2028,6 +2033,7 @@ export const audioCommandStore = transformCommandStore(
             }
         )
       ) {
+        const presetStore = usePresetStore();
         audioStore.mutations.SET_AUDIO_VOICE(draft, {
           audioKey: payload.audioKey,
           voice: payload.voice,
@@ -2038,7 +2044,9 @@ export const audioCommandStore = transformCommandStore(
         const presetKey = draft.audioItems[payload.audioKey].presetKey;
 
         const { nextPresetKey, shouldApplyPreset } = determineNextPresetKey(
-          draft,
+          presetStore.defaultPresetKeys,
+          draft.experimentalSetting,
+          draft.inheritAudioInfo,
           payload.voice,
           presetKey,
           "changeVoice"

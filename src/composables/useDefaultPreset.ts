@@ -1,11 +1,11 @@
 import { computed } from "vue";
-import { useStore } from "@/store";
+import { usePresetStore } from "@/pinia-stores/preset";
 import { PresetKey, Voice, VoiceId } from "@/type/preload";
 
 export const useDefaultPreset = () => {
-  const store = useStore();
+  const presetStore = usePresetStore();
 
-  const defaultPresetKeys = computed(() => store.state.defaultPresetKeys);
+  const defaultPresetKeys = computed(() => presetStore.defaultPresetKeys);
 
   const getDefaultPresetKeyForVoice = (voice: Voice): string => {
     const voiceId = VoiceId(voice);
@@ -13,7 +13,7 @@ export const useDefaultPreset = () => {
   };
 
   const isDefaultPresetKey = (presetKey: PresetKey): boolean => {
-    return store.getters.DEFAULT_PRESET_KEY_SETS.has(presetKey);
+    return presetStore.defaultPresetKeySets.has(presetKey);
   };
 
   return {

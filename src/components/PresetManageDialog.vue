@@ -48,6 +48,7 @@ import draggable from "vuedraggable";
 import { useStore } from "@/store";
 
 import { useDefaultPreset } from "@/composables/useDefaultPreset";
+import { usePresetStore } from "@/pinia-stores/preset";
 import { Preset, PresetKey } from "@/type/preload";
 
 const props =
@@ -62,10 +63,11 @@ const emit =
 const updateOpenDialog = (isOpen: boolean) => emit("update:openDialog", isOpen);
 
 const store = useStore();
+const presetStore = usePresetStore();
 const { isDefaultPresetKey } = useDefaultPreset();
 
-const presetItems = computed(() => store.state.presetItems);
-const presetKeys = computed(() => store.state.presetKeys);
+const presetItems = computed(() => presetStore.presetItems);
+const presetKeys = computed(() => presetStore.presetKeys);
 
 const presetList = computed(() =>
   presetKeys.value
@@ -78,7 +80,7 @@ const presetList = computed(() =>
 );
 
 const isPreview = ref(false);
-const previewPresetKeys = ref(store.state.presetKeys);
+const previewPresetKeys = ref(presetStore.presetKeys);
 
 const previewPresetList = computed(() =>
   isPreview.value
@@ -100,8 +102,8 @@ const reorderPreset = (featurePresetList: (Preset & { key: PresetKey })[]) => {
   // デフォルトプリセットは表示するlistから除外しているので、末尾に追加しておかないと失われる
   const defaultPresetKeys = presetKeys.value.filter(isDefaultPresetKey);
 
-  store
-    .dispatch("SAVE_PRESET_ORDER", {
+  presetStore
+    .savePresetOrder({
       presetKeys: [...newPresetKeys, ...defaultPresetKeys],
     })
     .finally(() => (isPreview.value = false));
@@ -114,7 +116,7 @@ const deletePreset = async (key: PresetKey) => {
     actionName: "削除",
   });
   if (result === "OK") {
-    await store.dispatch("DELETE_PRESET", {
+    await presetStore.deletePreset({
       presetKey: key,
     });
   }

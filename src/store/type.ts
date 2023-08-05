@@ -29,7 +29,6 @@ import {
   ExperimentalSetting,
   ToolbarSetting,
   UpdateInfo,
-  Preset,
   MorphingInfo,
   ActivePointScrollMode,
   EngineInfo,
@@ -43,7 +42,6 @@ import {
   EngineSetting,
   Voice,
   EngineId,
-  VoiceId,
   SpeakerId,
   StyleId,
   AudioKey,
@@ -1329,62 +1327,6 @@ export type UiStoreTypes = {
 };
 
 /*
-  Preset Store Types
-*/
-
-export type PresetStoreState = {
-  presetKeys: PresetKey[];
-  presetItems: Record<PresetKey, Preset>;
-  defaultPresetKeys: Record<VoiceId, PresetKey>;
-};
-
-export type PresetStoreTypes = {
-  DEFAULT_PRESET_KEY_SETS: {
-    getter: Set<PresetKey>;
-  };
-  SET_PRESET_ITEMS: {
-    mutation: {
-      presetItems: Record<PresetKey, Preset>;
-    };
-  };
-  SET_PRESET_KEYS: {
-    mutation: {
-      presetKeys: PresetKey[];
-    };
-  };
-  SET_DEFAULT_PRESET_MAP: {
-    action(payload: { defaultPresetKeys: Record<VoiceId, PresetKey> }): void;
-    mutation: {
-      defaultPresetKeys: Record<VoiceId, PresetKey>;
-    };
-  };
-  HYDRATE_PRESET_STORE: {
-    action(): void;
-  };
-  SAVE_PRESET_ORDER: {
-    action(payload: { presetKeys: PresetKey[] }): void;
-  };
-  SAVE_PRESET_CONFIG: {
-    action(payload: {
-      presetItems: Record<string, Preset>;
-      presetKeys: PresetKey[];
-    }): void;
-  };
-  ADD_PRESET: {
-    action(payload: { presetData: Preset }): Promise<PresetKey>;
-  };
-  CREATE_ALL_DEFAULT_PRESET: {
-    action(): void;
-  };
-  UPDATE_PRESET: {
-    action(payload: { presetData: Preset; presetKey: PresetKey }): void;
-  };
-  DELETE_PRESET: {
-    action(payload: { presetKey: PresetKey }): void;
-  };
-};
-
-/*
  * Dictionary Store Types
  */
 
@@ -1462,7 +1404,6 @@ export type State = AudioStoreState &
   ProjectStoreState &
   SettingStoreState &
   UiStoreState &
-  PresetStoreState &
   DictionaryStoreState &
   ProxyStoreState;
 
@@ -1474,7 +1415,6 @@ type AllStoreTypes = AudioStoreTypes &
   ProjectStoreTypes &
   SettingStoreTypes &
   UiStoreTypes &
-  PresetStoreTypes &
   DictionaryStoreTypes &
   ProxyStoreTypes;
 

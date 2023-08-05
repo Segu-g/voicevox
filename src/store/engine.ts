@@ -1,6 +1,7 @@
 import { EngineState, EngineStoreState, EngineStoreTypes } from "./type";
 import { createUILockAction } from "./ui";
 import { createPartialStore } from "./vuex";
+import { usePresetStore } from "@/pinia-stores/preset";
 import type { EngineManifest } from "@/openapi";
 import type { EngineId, EngineInfo } from "@/type/preload";
 
@@ -229,6 +230,7 @@ export const engineStore = createPartialStore<EngineStoreTypes>({
 
   POST_ENGINE_START: {
     async action({ state, dispatch }, { engineIds }) {
+      const presetStore = usePresetStore();
       await dispatch("GET_ALT_PORT_INFOS");
       const result = await Promise.all(
         engineIds.map(async (engineId) => {
@@ -242,7 +244,7 @@ export const engineStore = createPartialStore<EngineStoreTypes>({
           }
 
           await dispatch("LOAD_DEFAULT_STYLE_IDS");
-          await dispatch("CREATE_ALL_DEFAULT_PRESET");
+          await presetStore.createAllDefaultPreset();
           const newCharacters = await dispatch("GET_NEW_CHARACTERS");
           const result = {
             success: state.engineStates[engineId] === "READY",

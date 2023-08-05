@@ -20,11 +20,11 @@ import {
 import { projectStoreState, projectStore } from "./project";
 import { uiStoreState, uiStore } from "./ui";
 import { settingStoreState, settingStore } from "./setting";
-import { presetStoreState, presetStore } from "./preset";
 import { dictionaryStoreState, dictionaryStore } from "./dictionary";
 import { proxyStore, proxyStoreState } from "./proxy";
 import { createPartialStore } from "./vuex";
 import { engineStoreState, engineStore } from "./engine";
+import { usePresetStore } from "@/pinia-stores/preset";
 import {
   DefaultStyleId,
   EngineId,
@@ -322,11 +322,12 @@ export const indexStore = createPartialStore<IndexStoreTypes>({
 
   INIT_VUEX: {
     async action({ dispatch }) {
+      const presetStore = usePresetStore();
       const promises = [];
 
       // 設定ファイルからstoreへ読み込む
       promises.push(dispatch("HYDRATE_UI_STORE"));
-      promises.push(dispatch("HYDRATE_PRESET_STORE"));
+      promises.push(presetStore.hydratePresetStore());
       promises.push(dispatch("HYDRATE_SETTING_STORE"));
 
       await Promise.all(promises).then(() => {
@@ -355,7 +356,6 @@ export const store = createStore<State, AllGetters, AllActions, AllMutations>({
     ...settingStoreState,
     ...audioCommandStoreState,
     ...indexStoreState,
-    ...presetStoreState,
     ...dictionaryStoreState,
     ...proxyStoreState,
   },
@@ -367,7 +367,6 @@ export const store = createStore<State, AllGetters, AllActions, AllMutations>({
     ...engineStore.getters,
     ...projectStore.getters,
     ...settingStore.getters,
-    ...presetStore.getters,
     ...dictionaryStore.getters,
     ...audioCommandStore.getters,
     ...indexStore.getters,
@@ -382,7 +381,6 @@ export const store = createStore<State, AllGetters, AllActions, AllMutations>({
     ...projectStore.mutations,
     ...settingStore.mutations,
     ...audioCommandStore.mutations,
-    ...presetStore.mutations,
     ...dictionaryStore.mutations,
     ...indexStore.mutations,
     ...proxyStore.mutations,
@@ -396,7 +394,6 @@ export const store = createStore<State, AllGetters, AllActions, AllMutations>({
     ...projectStore.actions,
     ...settingStore.actions,
     ...audioCommandStore.actions,
-    ...presetStore.actions,
     ...dictionaryStore.actions,
     ...indexStore.actions,
     ...proxyStore.actions,

@@ -8,7 +8,6 @@ import { audioStore, audioCommandStore } from "@/store/audio";
 import { projectStore } from "@/store/project";
 import { uiStore } from "@/store/ui";
 import { settingStore } from "@/store/setting";
-import { presetStore } from "@/store/preset";
 import { proxyStore } from "@/store/proxy";
 import { dictionaryStore } from "@/store/dictionary";
 import { engineStore } from "@/store/engine";
@@ -81,8 +80,6 @@ describe("store/vuex.js test", () => {
         showAddAudioItemButton: true,
         isPinned: false,
         isFullscreen: false,
-        presetItems: {},
-        presetKeys: [],
         hotkeySettings: [],
         toolbarSetting: [],
         acceptRetrieveTelemetry: "Unconfirmed",
@@ -143,7 +140,6 @@ describe("store/vuex.js test", () => {
         },
         progress: -1,
         isVuexReady: false,
-        defaultPresetKeys: {},
       },
       getters: {
         ...uiStore.getters,
@@ -154,7 +150,6 @@ describe("store/vuex.js test", () => {
         ...settingStore.getters,
         ...audioCommandStore.getters,
         ...indexStore.getters,
-        ...presetStore.getters,
         ...proxyStore.getters,
         ...dictionaryStore.getters,
       },
@@ -167,7 +162,6 @@ describe("store/vuex.js test", () => {
         ...settingStore.mutations,
         ...audioCommandStore.mutations,
         ...indexStore.mutations,
-        ...presetStore.mutations,
         ...proxyStore.mutations,
         ...dictionaryStore.mutations,
       },
@@ -180,7 +174,6 @@ describe("store/vuex.js test", () => {
         ...settingStore.actions,
         ...audioCommandStore.actions,
         ...indexStore.actions,
-        ...presetStore.actions,
         ...proxyStore.actions,
         ...dictionaryStore.actions,
       },
@@ -231,8 +224,6 @@ describe("store/vuex.js test", () => {
     assert.equal(store.state.isPinned, false);
     assert.isObject(store.state.presetItems);
     assert.isEmpty(store.state.presetItems);
-    assert.isArray(store.state.presetKeys);
-    assert.isEmpty(store.state.presetKeys);
     assert.isArray(store.state.hotkeySettings);
     assert.isEmpty(store.state.hotkeySettings);
     assert.propertyVal(store.state.themeSetting, "currentTheme", "Default");
