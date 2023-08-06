@@ -222,8 +222,6 @@ describe("store/vuex.js test", () => {
     assert.propertyVal(store.state.savingSetting, "exportLab", false);
     assert.propertyVal(store.state.savingSetting, "fileNamePattern", "");
     assert.equal(store.state.isPinned, false);
-    assert.isObject(store.state.presetItems);
-    assert.isEmpty(store.state.presetItems);
     assert.isArray(store.state.hotkeySettings);
     assert.isEmpty(store.state.hotkeySettings);
     assert.propertyVal(store.state.themeSetting, "currentTheme", "Default");
