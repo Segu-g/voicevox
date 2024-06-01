@@ -47,7 +47,7 @@ export function createUILockAction<S, A extends ActionsBase, K extends keyof A>(
   };
 }
 
-export function createDotPartialUILockAction<
+export function createDotNotationUILockAction<
   S,
   A extends ActionsBase,
   K extends keyof A,
@@ -136,7 +136,7 @@ export const uiStore = createPartialStore<UiStoreTypes>({
   },
 
   ASYNC_UI_LOCK: {
-    action: createDotPartialUILockAction(
+    action: createDotNotationUILockAction(
       async (_, { callback }: { callback: () => Promise<void> }) => {
         await callback();
       },
@@ -247,7 +247,7 @@ export const uiStore = createPartialStore<UiStoreTypes>({
   },
 
   SHOW_ALERT_DIALOG: {
-    action: createDotPartialUILockAction(
+    action: createDotNotationUILockAction(
       async (_, payload: { title: string; message: string; ok?: string }) => {
         return await showAlertDialog(payload);
       },
@@ -255,7 +255,7 @@ export const uiStore = createPartialStore<UiStoreTypes>({
   },
 
   SHOW_CONFIRM_DIALOG: {
-    action: createDotPartialUILockAction(
+    action: createDotNotationUILockAction(
       async (_, payload: CommonDialogOptions["confirm"]) => {
         return await showConfirmDialog(payload);
       },
@@ -263,7 +263,7 @@ export const uiStore = createPartialStore<UiStoreTypes>({
   },
 
   SHOW_WARNING_DIALOG: {
-    action: createDotPartialUILockAction(
+    action: createDotNotationUILockAction(
       async (_, payload: CommonDialogOptions["warning"]) => {
         return await showWarningDialog(payload);
       },
@@ -464,7 +464,7 @@ export const uiStore = createPartialStore<UiStoreTypes>({
   },
 
   RELOAD_APP: {
-    action: createDotPartialUILockAction(
+    action: createDotNotationUILockAction(
       async (
         { dispatch },
         { isMultiEngineOffMode }: { isMultiEngineOffMode?: boolean },
