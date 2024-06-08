@@ -188,11 +188,11 @@ export const projectStore = createPartialStore<ProjectStoreTypes>({
           }
 
           await applyTalkProjectToStore(
-            context.dispatch,
+            context.actions,
             parsedProjectData.talk,
           );
           await applySongProjectToStore(
-            context.dispatch,
+            context.actions,
             parsedProjectData.song,
           );
 
