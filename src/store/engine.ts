@@ -118,12 +118,16 @@ export const engineStore = createPartialStore<EngineStoreTypes>({
           await Promise.all(
             state.engineIds.map(
               async (engineId) =>
-                await actions.INSTANTIATE_ENGINE_CONNECTOR({
-                  engineId,
-                }).then(async (instance) => [
-                  engineId,
-                  await instance.invoke("engineManifestEngineManifestGet")({}),
-                ]),
+                await actions
+                  .INSTANTIATE_ENGINE_CONNECTOR({
+                    engineId,
+                  })
+                  .then(async (instance) => [
+                    engineId,
+                    await instance.invoke("engineManifestEngineManifestGet")(
+                      {},
+                    ),
+                  ]),
             ),
           ),
         ),
@@ -176,9 +180,11 @@ export const engineStore = createPartialStore<EngineStoreTypes>({
           }
 
           try {
-            await actions.INSTANTIATE_ENGINE_CONNECTOR({
-              engineId,
-            }).then((instance) => instance.invoke("versionVersionGet")({}));
+            await actions
+              .INSTANTIATE_ENGINE_CONNECTOR({
+                engineId,
+              })
+              .then((instance) => instance.invoke("versionVersionGet")({}));
           } catch {
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -230,7 +236,7 @@ export const engineStore = createPartialStore<EngineStoreTypes>({
 
   POST_ENGINE_START: {
     async action({ state, actions }, { engineIds }) {
-      await actions.GET_ALT_PORT_INFOS(
+      await actions.GET_ALT_PORT_INFOS();
       const result = await Promise.all(
         engineIds.map(async (engineId) => {
           if (state.engineStates[engineId] === "STARTING") {
@@ -242,9 +248,9 @@ export const engineStore = createPartialStore<EngineStoreTypes>({
             await actions.LOAD_CHARACTER({ engineId });
           }
 
-          await actions.LOAD_DEFAULT_STYLE_IDS(
-          await actions.CREATE_ALL_DEFAULT_PRESET(
-          const newCharacters = await actions.GET_NEW_CHARACTERS(
+          await actions.LOAD_DEFAULT_STYLE_IDS();
+          await actions.CREATE_ALL_DEFAULT_PRESET();
+          const newCharacters = await actions.GET_NEW_CHARACTERS();
           const result = {
             success: state.engineStates[engineId] === "READY",
             anyNewCharacters: newCharacters.length > 0,
@@ -311,13 +317,15 @@ export const engineStore = createPartialStore<EngineStoreTypes>({
      * 指定した話者（スタイルID）がエンジン側で初期化されているか
      */
     async action({ actions }, { engineId, styleId }) {
-      const isInitialized = await actions.INSTANTIATE_ENGINE_CONNECTOR({
-        engineId,
-      }).then((instance) =>
-        instance.invoke("isInitializedSpeakerIsInitializedSpeakerGet")({
-          speaker: styleId,
-        }),
-      );
+      const isInitialized = await actions
+        .INSTANTIATE_ENGINE_CONNECTOR({
+          engineId,
+        })
+        .then((instance) =>
+          instance.invoke("isInitializedSpeakerIsInitializedSpeakerGet")({
+            speaker: styleId,
+          }),
+        );
 
       return isInitialized;
     },
@@ -330,13 +338,15 @@ export const engineStore = createPartialStore<EngineStoreTypes>({
     async action({ actions }, { engineId, styleId }) {
       await actions.ASYNC_UI_LOCK({
         callback: () =>
-          actions.INSTANTIATE_ENGINE_CONNECTOR({
-            engineId,
-          }).then((instance) =>
-            instance.invoke("initializeSpeakerInitializeSpeakerPost")({
-              speaker: styleId,
-            }),
-          ),
+          actions
+            .INSTANTIATE_ENGINE_CONNECTOR({
+              engineId,
+            })
+            .then((instance) =>
+              instance.invoke("initializeSpeakerInitializeSpeakerPost")({
+                speaker: styleId,
+              }),
+            ),
       });
     },
   },
@@ -396,11 +406,13 @@ export const engineStore = createPartialStore<EngineStoreTypes>({
     async action({ mutations }, { engineId }) {
       mutations.SET_ENGINE_MANIFEST({
         engineId,
-        engineManifest: await this.actions.INSTANTIATE_ENGINE_CONNECTOR({
-          engineId,
-        }).then((instance) =>
-          instance.invoke("engineManifestEngineManifestGet")({}),
-        ),
+        engineManifest: await this.actions
+          .INSTANTIATE_ENGINE_CONNECTOR({
+            engineId,
+          })
+          .then((instance) =>
+            instance.invoke("engineManifestEngineManifestGet")({}),
+          ),
       });
     },
   },
@@ -416,12 +428,14 @@ export const engineStore = createPartialStore<EngineStoreTypes>({
 
   FETCH_AND_SET_ENGINE_SUPPORTED_DEVICES: {
     async action({ actions, mutations }, { engineId }) {
-      const supportedDevices = await actions.INSTANTIATE_ENGINE_CONNECTOR({
-        engineId,
-      }).then(
-        async (instance) =>
-          await instance.invoke("supportedDevicesSupportedDevicesGet")({}),
-      );
+      const supportedDevices = await actions
+        .INSTANTIATE_ENGINE_CONNECTOR({
+          engineId,
+        })
+        .then(
+          async (instance) =>
+            await instance.invoke("supportedDevicesSupportedDevicesGet")({}),
+        );
 
       mutations.SET_ENGINE_SUPPORTED_DEVICES({
         engineId,
